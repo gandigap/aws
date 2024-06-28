@@ -2,17 +2,29 @@ import React, { useState } from 'react'
 import TextField from '@mui/material/TextField';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { Button, Typography } from '@mui/material';
+import axios from 'axios';
 import './index.css';
+import { API_URL } from '../../utils';
 
-export const AddTaskForm = () => {
-  const [task, setTask] = useState('')
+export const AddTaskForm = ({fetchTasks}) => {
+  const [newTask, setNewTask] = useState('')
 
   const handleChange = (e)=>{
-    setTask(e.target.value)
+    setNewTask(e.target.value)
   }
 
-  const handleClick = ()=>{
-    console.log('add new task');
+  const handleClick = async ()=>{
+    try {
+      await axios.post(API_URL, {
+        name: newTask,
+        completed: false
+      })
+
+      await fetchTasks();
+      setNewTask('')
+    } catch (error) {
+      console.log(`Add ${error}`)
+    }
   }
 
   return (
@@ -30,10 +42,10 @@ export const AddTaskForm = () => {
           size={'small'}
           label="Task" 
           variant="outlined" 
-          value={task} 
+          value={newTask} 
           onChange={handleChange} />
         <Button
-          disabled={!task.length}
+          disabled={!newTask.length}
           variant={'outlined'} 
           onClick={handleClick}>
           <AddBoxIcon/>
